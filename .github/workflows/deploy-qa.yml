@@ -1,0 +1,76 @@
+name: Deploy to QA
+
+# Merges to the integration branch land in QA automatically. Tests run again here
+# rather than trusting the PR validation, because the merge result is not
+# necessarily what was validated.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'force-app/**'
+      - 'sfdx-project.json'
+  workflow_dispatch:
+    inputs:
+      test-level:
+        description: Test level for this deployment
+        required: true
+        default: RunLocalTests
+        type: choice
+        options:
+          - RunLocalTests
+          - RunAllTestsInOrg
+          - NoTestRun
+
+# Never let two deployments hit the same org at once. Not cancel-in-progress:
+# a deployment that is already applying changes should be allowed to finish.
+concurrency:
+  group: sf-deploy-qa
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: qa
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Authorize QA
+        uses: ./.github/actions/sf-auth
+        with:
+          client-id: ${{ secrets.SF_QA_CLIENT_ID }}
+          username: ${{ secrets.SF_QA_USERNAME }}
+          jwt-key: ${{ secrets.SF_QA_JWT_KEY }}
+          instance-url: ${{ secrets.SF_QA_INSTANCE_URL }}
+          alias: qa
+
+      - name: Deploy
+        env:
+          TEST_LEVEL: ${{ inputs.test-level || 'RunLocalTests' }}
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org qa \
+            --test-level "$TEST_LEVEL" \
+            --coverage-formatters json-summary \
+            --junit \
+            --results-dir ./deploy-results \
+            --wait 60
+
+      - name: Upload test and coverage results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-deploy-results
+          path: ./deploy-results
+          if-no-files-found: ignore
+          retention-days: 30

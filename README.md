@@ -71,8 +71,22 @@ the heartbeat, adding agents) and [`docs/CUSTOMIZATION.md`](docs/CUSTOMIZATION.m
 Every step writes a `Service_Routing_Event__c` row, so "why did this land on Dana?" is a
 related list, not an investigation.
 
+## Continuous delivery
+
+Three GitHub Actions workflows ship with the project, using JWT auth so no browser
+login or refresh token is stored anywhere:
+
+- **Pull request** → validates against QA (compiles, runs all local tests, changes nothing)
+- **Merge to `main`** → deploys to QA
+- **Manual** → validates against production, waits for a named human to approve, then
+  quick-deploys the already-validated payload
+
+Setup is in [`docs/CI_SETUP.md`](docs/CI_SETUP.md) — connected apps, key pairs, secrets
+and the approval gate.
+
 ## Documentation
 
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — the data model and the decisions behind it
 - [`docs/CUSTOMIZATION.md`](docs/CUSTOMIZATION.md) — how to answer team feedback without code
 - [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — deploy, configure, schedule, test
+- [`docs/CI_SETUP.md`](docs/CI_SETUP.md) — GitHub Actions deployment to QA and production

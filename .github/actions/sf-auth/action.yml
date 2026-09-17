@@ -1,0 +1,68 @@
+name: Authorize Salesforce org
+description: >
+  Installs the Salesforce CLI and authorizes an org using the JWT bearer flow.
+  No browser, no refresh token stored in the repo - the private key is the only secret.
+
+inputs:
+  client-id:
+    description: Consumer Key of the connected app in the target org.
+    required: true
+  username:
+    description: Username of the integration user the connected app is pre-authorized for.
+    required: true
+  jwt-key:
+    description: Base64-encoded PEM private key matching the certificate on the connected app.
+    required: true
+  instance-url:
+    description: https://login.salesforce.com for production, https://test.salesforce.com for sandboxes.
+    required: true
+  alias:
+    description: Local alias for the authorized org.
+    required: false
+    default: target-org
+  cli-version:
+    description: Salesforce CLI version range to install.
+    required: false
+    default: '2'
+
+runs:
+  using: composite
+  steps:
+    - name: Install Salesforce CLI
+      shell: bash
+      env:
+        CLI_VERSION: ${{ inputs.cli-version }}
+      run: |
+        npm install --global --no-fund --no-audit "@salesforce/cli@${CLI_VERSION}"
+        sf --version
+
+    - name: Write JWT key
+      shell: bash
+      env:
+        JWT_KEY: ${{ inputs.jwt-key }}
+      run: |
+        # umask first so the key is never briefly world-readable.
+        umask 077
+        printf '%s' "$JWT_KEY" | base64 --decode > "${RUNNER_TEMP}/sf-jwt.key"
+        # Validate the shape without ever printing the contents.
+        if ! grep -q 'PRIVATE KEY' "${RUNNER_TEMP}/sf-jwt.key"; then
+          echo "::error::The decoded JWT key is not a PEM private key. Re-check the base64 encoding of the secret."
+          exit 1
+        fi
+
+    - name: Authorize org
+      shell: bash
+      env:
+        CLIENT_ID: ${{ inputs.client-id }}
+        USERNAME: ${{ inputs.username }}
+        INSTANCE_URL: ${{ inputs.instance-url }}
+        ORG_ALIAS: ${{ inputs.alias }}
+      run: |
+        sf org login jwt \
+          --client-id "$CLIENT_ID" \
+          --username "$USERNAME" \
+          --jwt-key-file "${RUNNER_TEMP}/sf-jwt.key" \
+          --instance-url "$INSTANCE_URL" \
+          --alias "$ORG_ALIAS" \
+          --set-default
+        sf org display --target-org "$ORG_ALIAS"

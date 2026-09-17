@@ -1,0 +1,129 @@
+name: Deploy to Production
+
+# Two-stage on purpose. Stage one validates against production and runs the full
+# test suite without changing anything. A human then reads that result and
+# approves stage two, which is a quick deploy of the already-validated payload -
+# it applies in seconds because the tests have already passed.
+#
+# Manual only. Production should never deploy because someone merged something.
+on:
+  workflow_dispatch:
+    inputs:
+      test-level:
+        description: Test level for the validation
+        required: true
+        default: RunLocalTests
+        type: choice
+        options:
+          - RunLocalTests
+          - RunAllTestsInOrg
+      ref:
+        description: Branch, tag or SHA to deploy (defaults to the branch this was run from)
+        required: false
+        type: string
+
+concurrency:
+  group: sf-deploy-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate against production
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    outputs:
+      job-id: ${{ steps.validate.outputs.job-id }}
+      deployed-sha: ${{ steps.resolve.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - name: Record what is being deployed
+        id: resolve
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "Validating $(git rev-parse --short HEAD) - $(git log -1 --pretty=%s)" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Authorize production
+        uses: ./.github/actions/sf-auth
+        with:
+          client-id: ${{ secrets.SF_PROD_CLIENT_ID }}
+          username: ${{ secrets.SF_PROD_USERNAME }}
+          jwt-key: ${{ secrets.SF_PROD_JWT_KEY }}
+          instance-url: ${{ secrets.SF_PROD_INSTANCE_URL }}
+          alias: prod
+
+      - name: Validate
+        id: validate
+        env:
+          TEST_LEVEL: ${{ inputs.test-level }}
+        run: |
+          set -o pipefail
+          sf project deploy validate \
+            --source-dir force-app \
+            --target-org prod \
+            --test-level "$TEST_LEVEL" \
+            --coverage-formatters json-summary \
+            --junit \
+            --results-dir ./deploy-results \
+            --wait 90 \
+            --json | tee validate.json
+
+          JOB_ID=$(jq -r '.result.id // empty' validate.json)
+          if [ -z "$JOB_ID" ]; then
+            echo "::error::Validation did not return a job id, so there is nothing to quick-deploy."
+            exit 1
+          fi
+          echo "job-id=${JOB_ID}" >> "$GITHUB_OUTPUT"
+          echo "Validated. Quick-deploy job id: \`${JOB_ID}\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test and coverage results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-validation-results
+          path: ./deploy-results
+          if-no-files-found: ignore
+          retention-days: 90
+
+  deploy:
+    name: Quick deploy (requires approval)
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Put required reviewers on this environment in repository settings.
+    # That is what turns the step below into a human decision.
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.validate.outputs.deployed-sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Authorize production
+        uses: ./.github/actions/sf-auth
+        with:
+          client-id: ${{ secrets.SF_PROD_CLIENT_ID }}
+          username: ${{ secrets.SF_PROD_USERNAME }}
+          jwt-key: ${{ secrets.SF_PROD_JWT_KEY }}
+          instance-url: ${{ secrets.SF_PROD_INSTANCE_URL }}
+          alias: prod
+
+      - name: Quick deploy validated payload
+        env:
+          JOB_ID: ${{ needs.validate.outputs.job-id }}
+        run: |
+          sf project deploy quick --job-id "$JOB_ID" --target-org prod --wait 30
+          echo "Deployed \`${JOB_ID}\` (${{ needs.validate.outputs.deployed-sha }}) to production." >> "$GITHUB_STEP_SUMMARY"

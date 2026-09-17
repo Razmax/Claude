@@ -5,3 +5,8 @@ deploy-options.json
 node_modules/
 *.log
 .DS_Store
+
+# JWT signing material for CI - never commit these
+.jwt-keys/
+*.key
+server.crt

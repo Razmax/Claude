@@ -1,0 +1,62 @@
+name: Validate against QA
+
+# Every pull request is compiled and tested against the QA sandbox without
+# committing anything. This is the gate that catches the errors a local deploy
+# would catch, before they reach anyone's org.
+on:
+  pull_request:
+    paths:
+      - 'force-app/**'
+      - 'sfdx-project.json'
+      - '.github/workflows/pr-validate.yml'
+      - '.github/actions/sf-auth/**'
+  workflow_dispatch:
+
+# One validation per branch; a new push supersedes the one in flight.
+concurrency:
+  group: sf-validate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Compile and run tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Authorize QA
+        uses: ./.github/actions/sf-auth
+        with:
+          client-id: ${{ secrets.SF_QA_CLIENT_ID }}
+          username: ${{ secrets.SF_QA_USERNAME }}
+          jwt-key: ${{ secrets.SF_QA_JWT_KEY }}
+          instance-url: ${{ secrets.SF_QA_INSTANCE_URL }}
+          alias: qa
+
+      - name: Validate deployment
+        run: |
+          sf project deploy validate \
+            --source-dir force-app \
+            --target-org qa \
+            --test-level RunLocalTests \
+            --coverage-formatters json-summary \
+            --junit \
+            --results-dir ./deploy-results \
+            --wait 45
+
+      - name: Upload test and coverage results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-validation-results
+          path: ./deploy-results
+          if-no-files-found: ignore
+          retention-days: 14
