@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Overflow_Queue__c</fullName>
+    <description>Where work moves if it waits longer than Overflow After Minutes.</description>
+    <label>Overflow Queue</label>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>Service_Queue__c</referenceTo>
+    <relationshipLabel>Overflow Source Queues</relationshipLabel>
+    <relationshipName>Overflow_Source_Queues</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

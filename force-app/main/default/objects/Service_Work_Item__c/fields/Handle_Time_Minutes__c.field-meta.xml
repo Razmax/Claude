@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Handle_Time_Minutes__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(OR(ISBLANK(Accepted_At__c), ISBLANK(Completed_At__c)), 0, (Completed_At__c - Accepted_At__c) * 1440)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <precision>18</precision>
+    <scale>2</scale>
+    <label>Handle Time Minutes</label>
+    <type>Number</type>
+</CustomField>

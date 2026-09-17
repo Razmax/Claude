@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Color__c</fullName>
+    <description>CSS color for the console badge, e.g. #2e844a.</description>
+    <label>Color</label>
+    <length>20</length>
+    <externalId>false</externalId>
+    <unique>false</unique>
+    <required>false</required>
+    <type>Text</type>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+</CustomField>

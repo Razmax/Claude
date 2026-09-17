@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Enable_Routing__c</fullName>
+    <description>Master switch. Uncheck to stop all automatic assignment without deactivating code.</description>
+    <label>Enable Routing</label>
+    <defaultValue>true</defaultValue>
+    <type>Checkbox</type>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+</CustomField>

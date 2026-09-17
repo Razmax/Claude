@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#0176D3</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <description>Custom work routing for Customer Service and Credit: queues, presence, capacity and skills you control.</description>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <label>Service Routing</label>
+    <navType>Console</navType>
+    <tabs>Service_Routing_Supervisor_Home</tabs>
+    <tabs>Service_Work_Item__c</tabs>
+    <tabs>Service_Queue__c</tabs>
+    <tabs>Service_Agent__c</tabs>
+    <tabs>Service_Agent_Queue__c</tabs>
+    <tabs>Service_Routing_Event__c</tabs>
+    <tabs>standard-Case</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>Service_Routing_Utility_Bar</utilityBar>
+    <workspaceConfig>
+        <mappings>
+            <tab>Service_Work_Item__c</tab>
+        </mappings>
+        <mappings>
+            <tab>standard-Case</tab>
+        </mappings>
+        <mappings>
+            <tab>Service_Queue__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Service_Agent__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Service_Agent_Queue__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Service_Routing_Event__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Service_Routing_Supervisor_Home</tab>
+        </mappings>
+    </workspaceConfig>
+</CustomApplication>

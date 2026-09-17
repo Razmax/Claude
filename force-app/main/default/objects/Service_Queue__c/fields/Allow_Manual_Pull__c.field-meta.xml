@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Allow_Manual_Pull__c</fullName>
+    <description>Let agents pull waiting work from this queue instead of only receiving pushed work.</description>
+    <label>Allow Manual Pull</label>
+    <defaultValue>true</defaultValue>
+    <type>Checkbox</type>
+</CustomField>

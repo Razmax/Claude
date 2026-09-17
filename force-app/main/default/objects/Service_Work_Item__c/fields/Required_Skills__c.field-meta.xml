@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Required_Skills__c</fullName>
+    <description>Semicolon separated. Skill Based routing only considers agents holding all of these.</description>
+    <label>Required Skills</label>
+    <length>255</length>
+    <externalId>false</externalId>
+    <unique>false</unique>
+    <required>false</required>
+    <type>Text</type>
+</CustomField>

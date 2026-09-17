@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Value_1__c</fullName>
+    <description>For the In operator use a semicolon separated list.</description>
+    <label>Value 1</label>
+    <length>255</length>
+    <externalId>false</externalId>
+    <unique>false</unique>
+    <required>false</required>
+    <type>Text</type>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+</CustomField>

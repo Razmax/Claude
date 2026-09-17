@@ -1,0 +1,190 @@
+<template>
+    <div class="console">
+        <!-- Presence header -->
+        <div class="presence-bar slds-p-around_small">
+            <div class="slds-grid slds-grid_vertical-align-center slds-wrap">
+                <span class="presence-dot" style={presenceDotStyle}></span>
+                <div class="slds-col slds-grow slds-p-left_x-small">
+                    <div class="slds-text-title_caps slds-text-color_weak">Presence</div>
+                    <div class="slds-text-heading_small">{state.presenceLabel}</div>
+                </div>
+                <lightning-button-menu
+                    alternative-text="Change presence"
+                    icon-name="utility:down"
+                    menu-alignment="right"
+                    onselect={handlePresenceSelect}>
+                    <template for:each={state.presenceOptions} for:item="option">
+                        <lightning-menu-item
+                            key={option.developerName}
+                            value={option.developerName}
+                            label={option.label}>
+                        </lightning-menu-item>
+                    </template>
+                </lightning-button-menu>
+            </div>
+
+            <!-- Capacity -->
+            <div class="slds-m-top_x-small">
+                <div class="slds-grid slds-grid_align-spread slds-text-body_small">
+                    <span>Capacity</span>
+                    <span>{state.currentLoad} / {state.maxCapacity}</span>
+                </div>
+                <div class="capacity-track">
+                    <div class="capacity-fill" style={capacityStyle}></div>
+                </div>
+            </div>
+
+            <template lwc:if={routingDisabled}>
+                <div class="slds-text-color_error slds-text-body_small slds-m-top_x-small">
+                    Routing is turned off in Service Routing Settings.
+                </div>
+            </template>
+        </div>
+
+        <lightning-tabset variant="scoped" class="slds-p-horizontal_xx-small">
+            <!-- Assigned work -->
+            <lightning-tab label={myWorkLabel} value="mine">
+                <template lwc:if={hasMyWork}>
+                    <template for:each={state.myWork} for:item="item">
+                        <div key={item.id} class="work-card slds-p-around_x-small slds-m-bottom_xx-small">
+                            <div class="slds-grid slds-grid_align-spread">
+                                <div class="slds-truncate work-subject" title={item.subject}>{item.subject}</div>
+                                <lightning-badge label={item.channel}></lightning-badge>
+                            </div>
+                            <div class="slds-text-body_small slds-text-color_weak slds-m-top_xxx-small">
+                                {item.name} &middot; {item.queueName} &middot; Priority {item.priority}
+                                <template lwc:if={item.isOverdue}>
+                                    <span class="slds-text-color_error"> &middot; Overdue</span>
+                                </template>
+                            </div>
+
+                            <template lwc:if={item.canAccept}>
+                                <div class="slds-text-body_small slds-m-top_xxx-small countdown">
+                                    Respond within {item.secondsLeft}s
+                                </div>
+                            </template>
+
+                            <div class="slds-m-top_x-small slds-grid slds-wrap slds-grid_vertical-align-center">
+                                <template lwc:if={item.canAccept}>
+                                    <lightning-button
+                                        class="slds-m-right_xx-small"
+                                        variant="brand"
+                                        label="Accept"
+                                        data-id={item.id}
+                                        onclick={handleAccept}>
+                                    </lightning-button>
+                                    <lightning-button
+                                        class="slds-m-right_xx-small"
+                                        label="Decline"
+                                        data-id={item.id}
+                                        onclick={handleDecline}>
+                                    </lightning-button>
+                                </template>
+                                <template lwc:if={item.canComplete}>
+                                    <lightning-button
+                                        class="slds-m-right_xx-small"
+                                        variant="success"
+                                        label="Complete"
+                                        data-id={item.id}
+                                        onclick={handleComplete}>
+                                    </lightning-button>
+                                    <lightning-button
+                                        class="slds-m-right_xx-small"
+                                        label="Transfer"
+                                        data-id={item.id}
+                                        data-queue={item.queueId}
+                                        onclick={handleTransfer}>
+                                    </lightning-button>
+                                </template>
+                                <template lwc:if={item.sourceRecordId}>
+                                    <lightning-button
+                                        label="Open"
+                                        data-record={item.sourceRecordId}
+                                        onclick={handleOpenRecord}>
+                                    </lightning-button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+                <template lwc:else>
+                    <div class="slds-p-around_medium slds-text-align_center slds-text-color_weak">
+                        Nothing assigned to you right now.
+                    </div>
+                </template>
+            </lightning-tab>
+
+            <!-- Queue work the agent may pull -->
+            <lightning-tab label={availableLabel} value="queue">
+                <template lwc:if={hasAvailableWork}>
+                    <template for:each={state.availableWork} for:item="item">
+                        <div key={item.id} class="work-card slds-p-around_x-small slds-m-bottom_xx-small">
+                            <div class="slds-grid slds-grid_align-spread">
+                                <div class="slds-truncate work-subject" title={item.subject}>{item.subject}</div>
+                                <lightning-badge label={item.channel}></lightning-badge>
+                            </div>
+                            <div class="slds-text-body_small slds-text-color_weak slds-m-top_xxx-small">
+                                {item.queueName} &middot; waiting {item.waitMinutes} min
+                                <template lwc:if={item.isOverdue}>
+                                    <span class="slds-text-color_error"> &middot; Overdue</span>
+                                </template>
+                            </div>
+                            <div class="slds-m-top_x-small">
+                                <lightning-button
+                                    variant="brand-outline"
+                                    label="Pick up"
+                                    data-id={item.id}
+                                    onclick={handlePull}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+                <template lwc:else>
+                    <div class="slds-p-around_medium slds-text-align_center slds-text-color_weak">
+                        No work waiting in your queues.
+                    </div>
+                </template>
+            </lightning-tab>
+        </lightning-tabset>
+
+        <template lwc:if={loading}>
+            <lightning-spinner alternative-text="Working" size="small"></lightning-spinner>
+        </template>
+    </div>
+
+    <!-- Transfer modal -->
+    <template lwc:if={showTransfer}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-modal__title">Transfer work item</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-combobox
+                        label="Send to queue"
+                        options={transferQueues}
+                        value={transferQueueId}
+                        onchange={handleTransferQueueChange}>
+                    </lightning-combobox>
+                    <lightning-textarea
+                        class="slds-m-top_small"
+                        label="Reason"
+                        value={transferReason}
+                        onchange={handleTransferReasonChange}>
+                    </lightning-textarea>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeTransfer}></lightning-button>
+                    <lightning-button
+                        class="slds-m-left_x-small"
+                        variant="brand"
+                        label="Transfer"
+                        onclick={confirmTransfer}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

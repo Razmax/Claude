@@ -1,0 +1,11 @@
+.presence-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.queue-alert {
+    background-color: rgba(186, 5, 23, 0.06);
+}

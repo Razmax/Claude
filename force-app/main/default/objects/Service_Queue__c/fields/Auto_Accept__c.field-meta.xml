@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Auto_Accept__c</fullName>
+    <description>Skip the accept step - assigned work goes straight to Accepted.</description>
+    <label>Auto Accept</label>
+    <defaultValue>false</defaultValue>
+    <type>Checkbox</type>
+</CustomField>

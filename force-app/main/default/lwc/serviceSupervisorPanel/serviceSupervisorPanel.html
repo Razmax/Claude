@@ -1,0 +1,125 @@
+<template>
+    <lightning-card title="Service Routing" icon-name="standard:service_appointment">
+        <div slot="actions">
+            <lightning-button
+                label="Route now"
+                onclick={handleRouteNow}
+                class="slds-m-right_x-small">
+            </lightning-button>
+            <lightning-button
+                label="Resync capacity"
+                title="Recalculate every agent's load from their open work"
+                onclick={handleResync}
+                class="slds-m-right_x-small">
+            </lightning-button>
+            <lightning-button-icon
+                icon-name="utility:refresh"
+                alternative-text="Refresh"
+                onclick={handleRefresh}>
+            </lightning-button-icon>
+        </div>
+
+        <div class="slds-p-horizontal_medium">
+            <template lwc:if={routingDisabled}>
+                <div class="slds-box slds-box_x-small slds-theme_warning slds-m-bottom_small">
+                    Automatic routing is switched off in Service Routing Settings. Work will queue up
+                    until it is switched back on.
+                </div>
+            </template>
+
+            <template lwc:if={hasUnrouted}>
+                <div class="slds-box slds-box_x-small slds-theme_error slds-m-bottom_small">
+                    {dashboard.unroutedCount} work items have no queue. Check your routing rules.
+                </div>
+            </template>
+
+            <h3 class="slds-text-title_caps slds-m-bottom_x-small">Queues</h3>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-bottom_medium">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col"><div class="slds-truncate">Queue</div></th>
+                        <th scope="col"><div class="slds-truncate">Model</div></th>
+                        <th scope="col"><div class="slds-truncate">Waiting</div></th>
+                        <th scope="col"><div class="slds-truncate">Pushed</div></th>
+                        <th scope="col"><div class="slds-truncate">Working</div></th>
+                        <th scope="col"><div class="slds-truncate">Overdue</div></th>
+                        <th scope="col"><div class="slds-truncate">Oldest (min)</div></th>
+                        <th scope="col"><div class="slds-truncate">Agents on</div></th>
+                        <th scope="col"><div class="slds-truncate">&nbsp;</div></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={dashboard.queues} for:item="queue">
+                        <tr key={queue.queueId} class={queue.rowClass}>
+                            <th scope="row"><div class="slds-truncate">{queue.queueName}</div></th>
+                            <td><div class="slds-truncate">{queue.routingModel}</div></td>
+                            <td><div class="slds-truncate">{queue.waiting}</div></td>
+                            <td><div class="slds-truncate">{queue.assigned}</div></td>
+                            <td><div class="slds-truncate">{queue.inProgress}</div></td>
+                            <td><div class="slds-truncate">{queue.overdue}</div></td>
+                            <td><div class="slds-truncate">{queue.oldestWaitMinutes}</div></td>
+                            <td><div class="slds-truncate">{queue.availableAgents}</div></td>
+                            <td>
+                                <lightning-button
+                                    label="Route"
+                                    variant="base"
+                                    data-queue={queue.queueId}
+                                    onclick={handleRouteQueue}>
+                                </lightning-button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+
+            <h3 class="slds-text-title_caps slds-m-bottom_x-small">Agents</h3>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-m-bottom_medium">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col"><div class="slds-truncate">Agent</div></th>
+                        <th scope="col"><div class="slds-truncate">Presence</div></th>
+                        <th scope="col"><div class="slds-truncate">Load</div></th>
+                        <th scope="col"><div class="slds-truncate">Items</div></th>
+                        <th scope="col"><div class="slds-truncate">Utilization</div></th>
+                        <th scope="col"><div class="slds-truncate">Since</div></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={dashboard.agents} for:item="agent">
+                        <tr key={agent.agentId}>
+                            <th scope="row"><div class="slds-truncate">{agent.agentName}</div></th>
+                            <td>
+                                <span class="presence-dot" style={agent.dotStyle}></span>
+                                <span class="slds-m-left_xx-small">{agent.presenceLabel}</span>
+                            </td>
+                            <td><div class="slds-truncate">{agent.loadLabel}</div></td>
+                            <td><div class="slds-truncate">{agent.activeWorkCount}</div></td>
+                            <td><div class="slds-truncate">{agent.utilization}%</div></td>
+                            <td>
+                                <lightning-formatted-date-time
+                                    value={agent.presenceSince}
+                                    hour="2-digit"
+                                    minute="2-digit">
+                                </lightning-formatted-date-time>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+
+            <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                Last refreshed
+                <lightning-formatted-date-time
+                    value={dashboard.generatedAt}
+                    hour="2-digit"
+                    minute="2-digit"
+                    second="2-digit">
+                </lightning-formatted-date-time>
+            </p>
+        </div>
+
+        <template lwc:if={loading}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+    </lightning-card>
+</template>

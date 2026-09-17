@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Developer_Name__c</fullName>
+    <description>Stable API-safe key. Routing rules and Flows reference the queue by this value, not by record Id.</description>
+    <label>Developer Name</label>
+    <length>80</length>
+    <externalId>true</externalId>
+    <unique>true</unique>
+    <required>true</required>
+    <type>Text</type>
+</CustomField>

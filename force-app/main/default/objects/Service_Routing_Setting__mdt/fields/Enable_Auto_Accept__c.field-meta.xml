@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Enable_Auto_Accept__c</fullName>
+    <label>Enable Auto Accept</label>
+    <defaultValue>false</defaultValue>
+    <type>Checkbox</type>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+</CustomField>

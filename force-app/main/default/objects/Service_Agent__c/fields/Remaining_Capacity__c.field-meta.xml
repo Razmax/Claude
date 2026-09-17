@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Remaining_Capacity__c</fullName>
+    <externalId>false</externalId>
+    <formula>Max_Capacity__c - Current_Load__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <precision>7</precision>
+    <scale>2</scale>
+    <label>Remaining Capacity</label>
+    <type>Number</type>
+</CustomField>

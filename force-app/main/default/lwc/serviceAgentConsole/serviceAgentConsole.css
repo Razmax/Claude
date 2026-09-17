@@ -1,0 +1,52 @@
+.console {
+    position: relative;
+    min-width: 320px;
+    max-height: 640px;
+    overflow-y: auto;
+    background: var(--lwc-colorBackground, #f3f3f3);
+}
+
+.presence-bar {
+    background: var(--lwc-colorBackgroundAlt, #ffffff);
+    border-bottom: 1px solid var(--lwc-colorBorder, #e5e5e5);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.presence-dot {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+    display: inline-block;
+    flex: 0 0 auto;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.capacity-track {
+    height: 0.375rem;
+    border-radius: 0.1875rem;
+    background: var(--lwc-colorBackgroundRowHover, #e5e5e5);
+    overflow: hidden;
+    margin-top: 0.125rem;
+}
+
+.capacity-fill {
+    height: 100%;
+    border-radius: 0.1875rem;
+    transition: width 0.3s ease;
+}
+
+.work-card {
+    background: var(--lwc-colorBackgroundAlt, #ffffff);
+    border: 1px solid var(--lwc-colorBorder, #e5e5e5);
+    border-radius: 0.25rem;
+}
+
+.work-subject {
+    font-weight: 600;
+}
+
+.countdown {
+    color: #a6690d;
+}

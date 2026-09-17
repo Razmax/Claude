@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Requeue_On_Offline__c</fullName>
+    <description>When an agent goes offline, push their un-accepted work back to the queue.</description>
+    <label>Requeue On Offline</label>
+    <defaultValue>true</defaultValue>
+    <type>Checkbox</type>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+</CustomField>

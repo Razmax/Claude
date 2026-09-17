@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Queue__c</fullName>
+    <label>Queue</label>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>Service_Queue__c</referenceTo>
+    <relationshipLabel>Routing Events</relationshipLabel>
+    <relationshipName>Routing_Events</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

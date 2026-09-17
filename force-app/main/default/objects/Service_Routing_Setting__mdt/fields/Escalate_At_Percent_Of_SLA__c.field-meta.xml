@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Escalate_At_Percent_Of_SLA__c</fullName>
+    <label>Escalate At Percent Of SLA</label>
+    <precision>3</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <type>Number</type>
+    <unique>false</unique>
+    <defaultValue>80</defaultValue>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+</CustomField>

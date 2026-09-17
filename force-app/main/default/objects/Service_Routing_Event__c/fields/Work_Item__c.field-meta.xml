@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Work_Item__c</fullName>
+    <label>Work Item</label>
+    <deleteConstraint>Cascade</deleteConstraint>
+    <referenceTo>Service_Work_Item__c</referenceTo>
+    <relationshipLabel>Routing Events</relationshipLabel>
+    <relationshipName>Routing_Events</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Wait_Time_Minutes__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(Requested_At__c), 0, IF(ISBLANK(Accepted_At__c), (NOW() - Requested_At__c) * 1440, (Accepted_At__c - Requested_At__c) * 1440))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <precision>18</precision>
+    <scale>2</scale>
+    <label>Wait Time Minutes</label>
+    <type>Number</type>
+</CustomField>

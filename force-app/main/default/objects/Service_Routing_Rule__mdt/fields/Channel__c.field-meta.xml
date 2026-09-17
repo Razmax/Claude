@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Channel__c</fullName>
+    <description>Only evaluate when the inbound request carries this channel. Blank matches any.</description>
+    <label>Channel</label>
+    <length>40</length>
+    <externalId>false</externalId>
+    <unique>false</unique>
+    <required>false</required>
+    <type>Text</type>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+</CustomField>

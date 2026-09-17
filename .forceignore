@@ -1,0 +1,12 @@
+# Metadata that should never be deployed or retrieved
+**/jsconfig.json
+**/.eslintrc.json
+**/.eslintrc.js
+
+package.xml
+
+# LWC configuration files
+**/jsconfig.json
+
+# LWC Jest
+**/__tests__/**
